@@ -1,29 +1,30 @@
-# Dockerfile for Ruby on Rails application with PostgreSQL DB
+# Use an image with Ruby and Node.js installed
+FROM ruby:3.1.2
 
-# Use the official Ruby base image
-FROM ruby:2.7
-
-# Install dependencies
-RUN apt-get update -qq && apt-get install -y nodejs postgresql-client
-
-# Set the working directory in the container
+# Set the working directory inside the container
 WORKDIR /app
 
-# Install git
-RUN apt-get install -y git
+# Install necessary system dependencies
+RUN apt-get update && \
+    apt-get install -y git \
+                       nodejs \
+                       yarn \
+                       postgresql-client
 
-# Clone the GitHub repository
-RUN git clone https://github.com/HemanthGangula/Budget-App .
+# Install Bundler gem
+RUN gem install bundler
 
 # Copy the Gemfile and Gemfile.lock into the container
 COPY Gemfile Gemfile.lock ./
 
-# Install gems
+# Install project dependencies
 RUN bundle install
 
-# Set environment variables
-ENV RAILS_ENV=production
-ENV RAILS_SERVE_STATIC_FILES=true
+# Copy the rest of the application code into the container
+COPY . .
+
+# Precompile assets
+RUN bundle exec rails assets:precompile
 
 # Expose port 3000 to the outside world
 EXPOSE 3000

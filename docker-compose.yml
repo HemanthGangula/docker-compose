@@ -5,7 +5,8 @@ services:
     environment:
       POSTGRES_USER: blog-app
       POSTGRES_PASSWORD: password
-    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   web:
     build: .
@@ -19,3 +20,6 @@ services:
     environment:
       POSTGRES_USER: blog-app
       POSTGRES_PASSWORD: password
+
+volumes:
+  postgres_data:
